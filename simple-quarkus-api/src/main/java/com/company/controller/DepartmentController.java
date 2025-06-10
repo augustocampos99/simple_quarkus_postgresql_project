@@ -3,6 +3,7 @@ package com.company.controller;
 import com.company.dto.DepartmentRequestDto;
 import com.company.entity.Department;
 import com.company.service.DepartmentService;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,13 +13,15 @@ import java.util.List;
 @Path("/api/departments")
 public class DepartmentController {
 
+    @Inject
+    private DepartmentService departmentService;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get() {
         try {
-            var departmentService = new DepartmentService();
             return Response.status(Response.Status.OK)
-                    .entity(departmentService.getAll().getResult())
+                    .entity(this.departmentService.getAll().getResult())
                     .build();
         }
         catch(Exception e) {
@@ -29,13 +32,18 @@ public class DepartmentController {
     }
 
     @GET
-    @Path("{guid}")
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@PathParam("guid") String guid) {
+    public Response getById(@PathParam("id") int id) {
         try {
-            var departmentService = new DepartmentService();
+            var departmentResult = this.departmentService.getById(id).getResult();
+
+            if(departmentResult == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
             return Response.status(Response.Status.OK)
-                    .entity(departmentService.getByGuid().getResult())
+                    .entity(departmentResult)
                     .build();
         }
         catch(Exception e) {
@@ -52,7 +60,7 @@ public class DepartmentController {
         try {
             var departmentService = new DepartmentService();
             return Response.status(Response.Status.CREATED)
-                    .entity(departmentService.getByGuid().getResult())
+                    .entity(this.departmentService.getById(1).getResult())
                     .build();
         }
         catch(Exception e) {
@@ -63,14 +71,19 @@ public class DepartmentController {
     }
 
     @PUT
-    @Path("{guid}")
+    @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("guid") String guid, DepartmentRequestDto departmentRequest) {
+    public Response update(@PathParam("id") int id, DepartmentRequestDto departmentRequest) {
         try {
-            var departmentService = new DepartmentService();
+            var departmentResult = this.departmentService.getById(id).getResult();
+
+            if(departmentResult == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
             return Response.status(Response.Status.OK)
-                    .entity(departmentService.getAll().getResult())
+                    .entity(departmentResult)
                     .build();
         }
         catch(Exception e) {
