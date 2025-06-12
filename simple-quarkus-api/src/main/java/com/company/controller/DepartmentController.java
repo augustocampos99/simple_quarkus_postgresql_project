@@ -4,11 +4,10 @@ import com.company.dto.DepartmentRequestDto;
 import com.company.entity.Department;
 import com.company.service.DepartmentService;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import java.util.List;
 
 @Path("/api/departments")
 public class DepartmentController {
@@ -56,7 +55,7 @@ public class DepartmentController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(DepartmentRequestDto departmentRequest) {
+    public Response create(@Valid DepartmentRequestDto departmentRequest) {
         try {
             var department = new Department();
             department.setName(departmentRequest.getName());
@@ -77,20 +76,20 @@ public class DepartmentController {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("id") int id, DepartmentRequestDto departmentRequest) {
+    public Response update(@PathParam("id") int id, @Valid DepartmentRequestDto departmentRequest) {
         try {
-            var departmentResult = this.departmentService.getById(id).getResult();
+            var department = new Department();
+            department.setName(departmentRequest.getName());
+            department.setDescription(departmentRequest.getDescription());
+
+            var departmentResult = this.departmentService.update(department, id).getResult();
 
             if(departmentResult == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            var department = new Department();
-            department.setName(departmentRequest.getName());
-            department.setDescription(departmentRequest.getDescription());
-
-            return Response.status(Response.Status.CREATED)
-                    .entity(this.departmentService.update(department, id).getResult())
+            return Response.status(Response.Status.OK)
+                    .entity(departmentResult)
                     .build();
         }
         catch(Exception e) {
@@ -107,7 +106,7 @@ public class DepartmentController {
         try {
             var departmentResult = this.departmentService.remove(id);
 
-            if(departmentResult.isSuccess() == false) {
+            if(!departmentResult.isSuccess()) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 

@@ -1,9 +1,13 @@
 package com.company.dto;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 
 public class DepartmentRequestDto {
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Description is required")
     private String description;
 
     public String getName() {

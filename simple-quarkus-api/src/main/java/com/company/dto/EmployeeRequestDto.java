@@ -1,49 +1,23 @@
-package com.company.entity;
+package com.company.dto;
 
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
-import java.util.UUID;
-
-@Entity
-@Table(name = "employees", schema = "company")
-public class Employee {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(name = "guid")
-    private UUID guid;
-
-    @Column(name = "name")
+public class EmployeeRequestDto {
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @Column(name = "cpf")
+    @NotBlank(message = "CPF is required")
     private String cpf;
 
-    @Column(name = "email")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @Column(name = "phone")
+    @NotBlank(message = "Phone is required")
     private String phone;
 
-    @Column(name = "id_department")
+    @Min(message = "ID Department is required", value = 1)
     private int idDepartment;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public UUID getGuid() {
-        return guid;
-    }
-
-    public void setGuid(UUID guid) {
-        this.guid = guid;
-    }
 
     public String getName() {
         return name;
