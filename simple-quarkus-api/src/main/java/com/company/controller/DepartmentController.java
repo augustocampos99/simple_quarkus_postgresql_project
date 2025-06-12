@@ -58,9 +58,12 @@ public class DepartmentController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response create(DepartmentRequestDto departmentRequest) {
         try {
-            var departmentService = new DepartmentService();
+            var department = new Department();
+            department.setName(departmentRequest.getName());
+            department.setDescription(departmentRequest.getDescription());
+
             return Response.status(Response.Status.CREATED)
-                    .entity(this.departmentService.getById(1).getResult())
+                    .entity(this.departmentService.create(department).getResult())
                     .build();
         }
         catch(Exception e) {
@@ -82,8 +85,34 @@ public class DepartmentController {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
+            var department = new Department();
+            department.setName(departmentRequest.getName());
+            department.setDescription(departmentRequest.getDescription());
+
+            return Response.status(Response.Status.CREATED)
+                    .entity(this.departmentService.update(department, id).getResult())
+                    .build();
+        }
+        catch(Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response remove(@PathParam("id") int id) {
+        try {
+            var departmentResult = this.departmentService.remove(id);
+
+            if(departmentResult.isSuccess() == false) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
             return Response.status(Response.Status.OK)
-                    .entity(departmentResult)
+                    .entity(true)
                     .build();
         }
         catch(Exception e) {
